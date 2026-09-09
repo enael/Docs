@@ -1,3 +1,3 @@
 "# Docs" 
 
-https://github.com/enael/Docs/settings/pages
+https://enael.github.io/Docs/
