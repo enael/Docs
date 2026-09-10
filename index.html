@@ -3,9 +3,283 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Documentation</title>
+    <title>Documentation Technique - Système de Bâtiments</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-color: #38bdf8;
+            --accent-hover: #0284c7;
+            --code-bg: #0f172a;
+            --border-color: #334155;
+            --keyword-color: #f43f5e;
+            --type-color: #a855f7;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 3rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+        }
+
+        h1 {
+            color: var(--accent-color);
+            margin: 0 0 0.5rem 0;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .section {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            color: var(--accent-color);
+            margin-top: 0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            font-size: 1.4rem;
+        }
+
+        h3 {
+            color: #e2e8f0;
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        ul {
+            padding-left: 1.2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background-color: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: "Fira Code", Consolas, Monaco, monospace;
+            font-size: 0.9em;
+            color: #e2e8f0;
+        }
+
+        .method {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .variable {
+            color: #f59e0b;
+        }
+
+        .type {
+            color: var(--type-color);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .badge-enum { background-color: #0369a1; color: #e0f2fe; }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: rgba(15, 23, 42, 0.5);
+            color: var(--accent-color);
+        }
+
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+    </style>
 </head>
 <body>
-    <h1>Bonjour</h1>
+
+<div class="container">
+    <header>
+        <h1>Spécification Technique : Système de Bâtiments</h1>
+        <p class="subtitle">Architecture globale, variables principales et signatures des fonctions</p>
+    </header>
+
+    <!-- 1. ARCHITECTURE GLOBALE -->
+    <div class="section">
+        <h2>1. Architecture Générale</h2>
+        <p>Le système repose sur une classe centrale <code>Building</code> administrant le cycle de vie d'une structure dans l'environnement Unity. Le composant s'articule autour de trois modules autonomes :</p>
+        <ul>
+            <li><strong>États de Vie (<code>Status</code>) :</strong> Gestion des transitions entre placement, phase de chantier et fonctionnement actif.</li>
+            <li><strong>Système Logistique & Stockage (<code>Storage</code>) :</strong> Séparation nette des inventaires dédiés au chantier et des inventaires de production/stockage permanents.</li>
+            <li><strong>Modularité (<code>BuildingSlot</code> & <code>BuildingModule</code>) :</strong> Extension dynamique des capacités des édifices via des sous-composants dédiés.</li>
+        </ul>
+    </div>
+
+    <!-- 2. CYCLE DE VIE & ETATS -->
+    <div class="section">
+        <h2>2. États du Bâtiment</h2>
+        <p><span class="badge badge-enum">ENUM</span><code>Status</code> définit la phase active du bâtiment :</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Valeur</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>PLACEMENT</code></td>
+                    <td>Phase de pré-visualisation et de positionnement dans le monde.</td>
+                </tr>
+                <tr>
+                    <td><code>CONSTRUCTION</code></td>
+                    <td>Phase de chantier active. Reçoit les ressources nécessaires via <code>ConstructionStorages</code>.</td>
+                </tr>
+                <tr>
+                    <td><code>COMPLETE</code></td>
+                    <td>Bâtiment achevé. Les <code>Storages</code> permanents et les modules deviennent opérationnels.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 3. VARIABLES PRINCIPALES -->
+    <div class="section">
+        <h2>3. Variables Principales (Classe <code>Building</code>)</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nom de la Variable</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="variable">_status</code></td>
+                        <td><span class="type">Status</span></td>
+                        <td>État courant du bâtiment (Placement, Construction, Complete).</td>
+                    </tr>
+                    <tr>
+                        <td><code class="variable">_constructionModule</code></td>
+                        <td><span class="type">ConstructionModule</span></td>
+                        <td>Référence vers le composant pilotant le chantier.</td>
+                    </tr>
+                    <tr>
+                        <td><code class="variable">Storages</code></td>
+                        <td><span class="type">List&lt;Storage&gt;</span></td>
+                        <td>Stockages de production et de fonctionnement permanents.</td>
+                    </tr>
+                    <tr>
+                        <td><code class="variable">ConstructionStorages</code></td>
+                        <td><span class="type">List&lt;Storage&gt;</span></td>
+                        <td>Stockages temporaires dédiés aux matériaux de construction.</td>
+                    </tr>
+                    <tr>
+                        <td><code class="variable">EmissiveObjects</code></td>
+                        <td><span class="type">List&lt;GameObject&gt;</span></td>
+                        <td>Objets dont le matériau réagit au cycle jour/nuit.</td>
+                    </tr>
+                    <tr>
+                        <td><code class="variable">NightLights</code></td>
+                        <td><span class="type">List&lt;GameObject&gt;</span></td>
+                        <td>Sources de lumière activées exclusivement la nuit.</td>
+                    </tr>
+                    <tr>
+                        <td><code class="variable">InUnits</code> / <code class="variable">ExitingUnits</code></td>
+                        <td><span class="type">List&lt;Unit&gt;</span></td>
+                        <td>Unités en cours de transit à l'intérieur ou vers la sortie du bâtiment.</td>
+                    </tr>
+                    <tr>
+                        <td><code class="variable">Entrance</code></td>
+                        <td><span class="type">Transform</span></td>
+                        <td>Point de passage et d'interaction pour les unités.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 4. FONCTIONS ET METHODES -->
+    <div class="section">
+        <h2>4. Fonctions Clés</h2>
+
+        <h3>Gestion du Cycle de Vie et Construction</h3>
+        <ul>
+            <li>
+                <code class="method">ConstructionDone()</code> : <span class="type">void</span><br>
+                <span>Invoquée à l'achèvement du chantier. Bascule <code>_status</code> à <code>COMPLETE</code>, nettoie le <code>ConstructionModule</code> et active les <code>Storages</code> principaux.</span>
+            </li>
+            <li>
+                <code class="method">SetStatus(Status newStatus)</code> : <span class="type">void</span><br>
+                <span>Met à jour l'état du bâtiment et déclenche les événements visuels et logiques associés.</span>
+            </li>
+        </ul>
+
+        <h3>Visuel & Rendu</h3>
+        <ul>
+            <li>
+                <code class="method">SetInfoColor(Color color)</code> : <span class="type">void</span><br>
+                <span>Applique une couleur d'emphase ou un contour d'information (<code>_InfoColor</code>) sur la structure.</span>
+            </li>
+            <li>
+                <code class="method">ToggleNightMode(bool isNight)</code> : <span class="type">void</span><br>
+                <span>Active ou désactive les éléments de <code>NightLights</code> et met à jour le rendu de <code>EmissiveObjects</code>.</span>
+            </li>
+        </ul>
+
+        <h3>Modularité</h3>
+        <ul>
+            <li>
+                <code class="method">InstallModule(BuildingSlot slot, BuildingModule module)</code> : <span class="type">bool</span><br>
+                <span>Attache un sous-module à un emplacement disponible et initialise ses fonctions.</span>
+            </li>
+        </ul>
+    </div>
+</div>
+
 </body>
 </html>
