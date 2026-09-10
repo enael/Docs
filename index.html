@@ -3,123 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Documentation Technique - Système de Bâtiments</title>
+    <title>Documentation Technique - Système de Bâtiments & Modules</title>
     <style>
         :root {
-            --bg-color: #0f172a;
+            --bg-main: #0f172a;
+            --bg-sidebar: #1e293b;
             --card-bg: #1e293b;
-            --text-color: #f8fafc;
-            --text-muted: #94a3b8;
+            --card-inner: #0f172a;
+            --border-color: #334155;
             --accent-color: #38bdf8;
             --accent-hover: #0284c7;
-            --code-bg: #0f172a;
-            --border-color: #334155;
-            --keyword-color: #f43f5e;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --code-color: #e2e8f0;
             --type-color: #a855f7;
+            --variable-color: #f59e0b;
+            --keyword-color: #f43f5e;
+            --comment-color: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
+            background-color: var(--bg-main);
             color: var(--text-color);
-            line-height: 1.6;
-            margin: 0;
-            padding: 2rem;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        .container {
-            max-width: 1100px;
+        /* --- SIDEBAR / TABLE DES MATIERES --- */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.1rem;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-header p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .toc-nav {
+            flex: 1;
+            padding: 1rem 0;
+            overflow-y: auto;
+        }
+
+        .toc-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .toc-link:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+            color: var(--text-color);
+        }
+
+        .toc-link.active {
+            color: var(--accent-color);
+            border-left-color: var(--accent-color);
+            background-color: rgba(56, 189, 248, 0.08);
+            font-weight: 600;
+        }
+
+        .toc-icon {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        /* --- CONTENU PRINCIPAL --- */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2.5rem;
+        }
+
+        .page-content {
+            display: none;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
+        .page-content.active {
+            display: block;
+            animation: fadeIn 0.25s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         header {
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 1.5rem;
+            padding-bottom: 1rem;
         }
 
         h1 {
             color: var(--accent-color);
-            margin: 0 0 0.5rem 0;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
         }
 
         .subtitle {
             color: var(--text-muted);
-            font-size: 1.1rem;
-            margin: 0;
+            font-size: 1rem;
         }
 
-        .section {
+        .card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         h2 {
             color: var(--accent-color);
-            margin-top: 0;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 0.5rem;
-            font-size: 1.4rem;
         }
 
-        h3 {
-            color: #e2e8f0;
-            margin-top: 1.5rem;
-            font-size: 1.1rem;
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
         }
 
         ul {
             padding-left: 1.2rem;
+            margin-bottom: 1rem;
         }
 
         li {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
         }
 
-        code {
-            background-color: var(--code-bg);
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            font-family: "Fira Code", Consolas, Monaco, monospace;
-            font-size: 0.9em;
-            color: #e2e8f0;
-        }
-
-        .method {
-            color: var(--accent-color);
-            font-weight: bold;
-        }
-
-        .variable {
-            color: #f59e0b;
-        }
-
-        .type {
-            color: var(--type-color);
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            margin-right: 0.5rem;
-        }
-
-        .badge-enum { background-color: #0369a1; color: #e0f2fe; }
-
-        .table-container {
-            overflow-x: auto;
-        }
-
+        /* --- TABLEAUX --- */
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 1rem;
+            margin-bottom: 1rem;
         }
 
         th, td {
@@ -129,157 +185,260 @@
         }
 
         th {
-            background-color: rgba(15, 23, 42, 0.5);
+            background-color: var(--card-inner);
             color: var(--accent-color);
+            font-size: 0.9rem;
+            text-transform: uppercase;
         }
 
         tr:hover {
             background-color: rgba(255, 255, 255, 0.02);
         }
+
+        /* --- CODE & TYPOGRAPHIE --- */
+        code {
+            background-color: var(--card-inner);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: "Fira Code", Consolas, Monaco, monospace;
+            font-size: 0.88em;
+            color: var(--code-color);
+        }
+
+        .code-block {
+            background-color: var(--card-inner);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: "Fira Code", Consolas, Monaco, monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            overflow-x: auto;
+            white-space: pre;
+            margin: 1rem 0;
+            color: var(--code-color);
+        }
+
+        .type { color: var(--type-color); }
+        .var { color: var(--variable-color); }
+        .kw { color: var(--keyword-color); }
+        .cm { color: var(--comment-color); }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .badge-enum { background-color: #0369a1; color: #e0f2fe; }
+        .badge-class { background-color: #6b21a8; color: #f3e8ff; }
+        .badge-struct { background-color: #854d0e; color: #fef3c7; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>Spécification Technique : Système de Bâtiments</h1>
-        <p class="subtitle">Architecture globale, variables principales et signatures des fonctions</p>
-    </header>
-
-    <!-- 1. ARCHITECTURE GLOBALE -->
-    <div class="section">
-        <h2>1. Architecture Générale</h2>
-        <p>Le système repose sur une classe centrale <code>Building</code> administrant le cycle de vie d'une structure dans l'environnement Unity. Le composant s'articule autour de trois modules autonomes :</p>
-        <ul>
-            <li><strong>États de Vie (<code>Status</code>) :</strong> Gestion des transitions entre placement, phase de chantier et fonctionnement actif.</li>
-            <li><strong>Système Logistique & Stockage (<code>Storage</code>) :</strong> Séparation nette des inventaires dédiés au chantier et des inventaires de production/stockage permanents.</li>
-            <li><strong>Modularité (<code>BuildingSlot</code> & <code>BuildingModule</code>) :</strong> Extension dynamique des capacités des édifices via des sous-composants dédiés.</li>
-        </ul>
-    </div>
-
-    <!-- 2. CYCLE DE VIE & ETATS -->
-    <div class="section">
-        <h2>2. États du Bâtiment</h2>
-        <p><span class="badge badge-enum">ENUM</span><code>Status</code> définit la phase active du bâtiment :</p>
-        <table>
-            <thead>
-                <tr>
-                    <th>Valeur</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><code>PLACEMENT</code></td>
-                    <td>Phase de pré-visualisation et de positionnement dans le monde.</td>
-                </tr>
-                <tr>
-                    <td><code>CONSTRUCTION</code></td>
-                    <td>Phase de chantier active. Reçoit les ressources nécessaires via <code>ConstructionStorages</code>.</td>
-                </tr>
-                <tr>
-                    <td><code>COMPLETE</code></td>
-                    <td>Bâtiment achevé. Les <code>Storages</code> permanents et les modules deviennent opérationnels.</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- 3. VARIABLES PRINCIPALES -->
-    <div class="section">
-        <h2>3. Variables Principales (Classe <code>Building</code>)</h2>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nom de la Variable</th>
-                        <th>Type</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code class="variable">_status</code></td>
-                        <td><span class="type">Status</span></td>
-                        <td>État courant du bâtiment (Placement, Construction, Complete).</td>
-                    </tr>
-                    <tr>
-                        <td><code class="variable">_constructionModule</code></td>
-                        <td><span class="type">ConstructionModule</span></td>
-                        <td>Référence vers le composant pilotant le chantier.</td>
-                    </tr>
-                    <tr>
-                        <td><code class="variable">Storages</code></td>
-                        <td><span class="type">List&lt;Storage&gt;</span></td>
-                        <td>Stockages de production et de fonctionnement permanents.</td>
-                    </tr>
-                    <tr>
-                        <td><code class="variable">ConstructionStorages</code></td>
-                        <td><span class="type">List&lt;Storage&gt;</span></td>
-                        <td>Stockages temporaires dédiés aux matériaux de construction.</td>
-                    </tr>
-                    <tr>
-                        <td><code class="variable">EmissiveObjects</code></td>
-                        <td><span class="type">List&lt;GameObject&gt;</span></td>
-                        <td>Objets dont le matériau réagit au cycle jour/nuit.</td>
-                    </tr>
-                    <tr>
-                        <td><code class="variable">NightLights</code></td>
-                        <td><span class="type">List&lt;GameObject&gt;</span></td>
-                        <td>Sources de lumière activées exclusivement la nuit.</td>
-                    </tr>
-                    <tr>
-                        <td><code class="variable">InUnits</code> / <code class="variable">ExitingUnits</code></td>
-                        <td><span class="type">List&lt;Unit&gt;</span></td>
-                        <td>Unités en cours de transit à l'intérieur ou vers la sortie du bâtiment.</td>
-                    </tr>
-                    <tr>
-                        <td><code class="variable">Entrance</code></td>
-                        <td><span class="type">Transform</span></td>
-                        <td>Point de passage et d'interaction pour les unités.</td>
-                    </tr>
-                </tbody>
-            </table>
+    <!-- TABLE DES MATIÈRES (SIDEBAR) -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Doc Technique</h2>
+            <p>Espace de nom : <code>GAME</code></p>
         </div>
-    </div>
+        <nav class="toc-nav">
+            <a class="toc-link active" onclick="switchPage('page-architecture')">
+                <span class="toc-icon">🏗️</span> Architecture Globale
+            </a>
+            <a class="toc-link" onclick="switchPage('page-building')">
+                <span class="toc-icon">🏛️</span> Structure Building
+            </a>
+            <a class="toc-link" onclick="switchPage('page-modules')">
+                <span class="toc-icon">🧩</span> Module & UI System
+            </a>
+        </nav>
+    </aside>
 
-    <!-- 4. FONCTIONS ET METHODES -->
-    <div class="section">
-        <h2>4. Fonctions Clés</h2>
+    <!-- ZONE DE CONTENU PRINCIPALE -->
+    <main class="main-content">
 
-        <h3>Gestion du Cycle de Vie et Construction</h3>
-        <ul>
-            <li>
-                <code class="method">ConstructionDone()</code> : <span class="type">void</span><br>
-                <span>Invoquée à l'achèvement du chantier. Bascule <code>_status</code> à <code>COMPLETE</code>, nettoie le <code>ConstructionModule</code> et active les <code>Storages</code> principaux.</span>
-            </li>
-            <li>
-                <code class="method">SetStatus(Status newStatus)</code> : <span class="type">void</span><br>
-                <span>Met à jour l'état du bâtiment et déclenche les événements visuels et logiques associés.</span>
-            </li>
-        </ul>
+        <!-- ================= PAGE 1 : ARCHITECTURE GLOBALE ================= -->
+        <section id="page-architecture" class="page-content active">
+            <header>
+                <h1>Page 1 : Architecture Globale du Système</h1>
+                <p class="subtitle">Vue d'ensemble de la structure C# Unity pour la gestion des bâtiments et modules.</p>
+            </header>
 
-        <h3>Visuel & Rendu</h3>
-        <ul>
-            <li>
-                <code class="method">SetInfoColor(Color color)</code> : <span class="type">void</span><br>
-                <span>Applique une couleur d'emphase ou un contour d'information (<code>_InfoColor</code>) sur la structure.</span>
-            </li>
-            <li>
-                <code class="method">ToggleNightMode(bool isNight)</code> : <span class="type">void</span><br>
-                <span>Active ou désactive les éléments de <code>NightLights</code> et met à jour le rendu de <code>EmissiveObjects</code>.</span>
-            </li>
-        </ul>
+            <div class="card">
+                <h2>1. Enumérations & Types de Base</h2>
+                <p>Le fichier définit les catégories de modules avec <span class="badge badge-enum">ENUM</span> <code>MODULE_TYPE</code> :</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Valeur Enum</th>
+                            <th>Usage / Rôle</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>OCCUPANCY</code></td><td>Gestion de l'occupation et des habitants/travailleurs.</td></tr>
+                        <tr><td><code>STORAGE</code></td><td>Gestion des ressources et des stocks.</td></tr>
+                        <tr><td><code>WORKSHOP</code></td><td>Atelier de fabrication ou de transformation.</td></tr>
+                        <tr><td><code>DEFENSE</code></td><td>Structures défensives et tourelles.</td></tr>
+                        <tr><td><code>EXTENSION</code></td><td>Extensions de bâtiment générales.</td></tr>
+                    </tbody>
+                </table>
+            </div>
 
-        <h3>Modularité</h3>
-        <ul>
-            <li>
-                <code class="method">InstallModule(BuildingSlot slot, BuildingModule module)</code> : <span class="type">bool</span><br>
-                <span>Attache un sous-module à un emplacement disponible et initialise ses fonctions.</span>
-            </li>
-        </ul>
-    </div>
-</div>
+            <div class="card">
+                <h2>2. Structure d'Emplacement : <code>BuildingSlot</code></h2>
+                <p><span class="badge badge-struct">SERIALIZABLE</span> Représente un slot sur un bâtiment où des modules peuvent être ancrés.</p>
+                
+                <div class="code-block"><span class="kw">public class</span> <span class="type">BuildingSlot</span>
+{
+    <span class="kw">public</span> <span class="type">List</span>&lt;<span class="type">GameObject</span>&gt; <span class="var">Modules</span>; <span class="cm">// Liste des GameObjects de prévisualisation/variantes</span>
+    <span class="kw">public</span> <span class="type">BuildingModule</span> <span class="var">Module</span>;     <span class="cm">// Instance du module actif dans ce slot</span>
+}</div>
+            </div>
+        </section>
 
+        <!-- ================= PAGE 2 : BUILDING ================= -->
+        <section id="page-building" class="page-content">
+            <header>
+                <h1>Page 2 : Classe Building & Inventaires</h1>
+                <p class="subtitle">Spécification des éléments centraux du composant principal <code>Building</code>.</p>
+            </header>
+
+            <div class="card">
+                <h2>1. Attributs Clés du Building</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Variable</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="var">UI</code></td>
+                            <td><span class="type">UIBuilding</span></td>
+                            <td>Interface graphique du bâtiment hébergeant les UIs des modules.</td>
+                        </tr>
+                        <tr>
+                            <td><code class="var">Storages</code></td>
+                            <td><span class="type">List&lt;Storage&gt;</span></td>
+                            <td>Réserves permanentes gérées par le bâtiment.</td>
+                        </tr>
+                        <tr>
+                            <td><code class="var">Slots</code></td>
+                            <td><span class="type">List&lt;BuildingSlot&gt;</span></td>
+                            <td>Emplacements disponibles pour équiper des modules.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>2. Méthodes Appelées par les Modules</h2>
+                <ul>
+                    <li><code class="type">Storage</code> <strong class="var">GetStorage</strong>(<code>RESOURCE resource</code>) : Recherche et réserve un stockage libre adapté à la ressource.</li>
+                    <li><code class="type">void</code> <strong class="var">UnreserveStorage</strong>(<code>Storage storage</code>) : Libère l'accès à un stockage précédemment réservé par un module.</li>
+                    <li><code class="type">void</code> <strong class="var">DestroyAllStorages</strong>(<code>List&lt;Storage&gt; storages</code>) : Supprime définitivement la liste de stockages spécifiée.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 3 : MODULES & UI ================= -->
+        <section id="page-modules" class="page-content">
+            <header>
+                <h1>Page 3 : Classe BuildingModule & Interface UI</h1>
+                <p class="subtitle">Gestion des comportements, des ressources et des fenêtres dynamiques.</p>
+            </header>
+
+            <div class="card">
+                <h2>1. Variables de <code>BuildingModule</code></h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Variable</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code class="var">UI</code></td><td><span class="type">UIBuildingModule</span></td><td>Préfab UI pour la vue raccourcie/liste du bâtiment.</td></tr>
+                        <tr><td><code class="var">UIWindow</code></td><td><span class="type">GameObject</span></td><td>Préfab de la fenêtre détaillée (instancié dynamiquement).</td></tr>
+                        <tr><td><code class="var">Building</code></td><td><span class="type">Building</span></td><td>Référence vers le bâtiment maître.</td></tr>
+                        <tr><td><code class="var">Storages</code></td><td><span class="type">List&lt;Storage&gt;</span></td><td>Liste des stockages actuellement gérés par ce module.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>2. Méthodes du Cycle de Vie du Module</h2>
+                <ul>
+                    <li><code class="type">virtual void</code> <strong class="var">Install</strong>(<code>Building building</code>) : Initialise le module, duplique son UI et l'associe au bâtiment.</li>
+                    <li><code class="type">virtual void</code> <strong class="var">Uninstall</strong>() : Déconnecte l'UI et libère tous les stockages réservés.</li>
+                    <li><code class="type">virtual void</code> <strong class="var">Work</strong>() : Point d'entrée virtuel exécuté à chaque cycle de travail du module.</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>3. Gestion de l'UI Détaillée (<code>CreateDetailedUI</code>)</h2>
+                <p>La méthode <code class="var">CreateDetailedUI</code> est responsable du réparentage dynamique d'une fenêtre dans le conteneur UI :</p>
+
+                <div class="code-block"><span class="kw">public void</span> <span class="var">CreateDetailedUI</span>(<span class="type">UIWindowBuildingModulesContainer</span> container)
+{
+    <span class="kw">if</span> (UIWindow == <span class="kw">null</span>) <span class="kw">return</span>;
+
+    <span class="cm">// 1. Instanciation du préfab UI</span>
+    <span class="type">GameObject</span> tempRoot = Instantiate(UIWindow);
+    <span class="type">Transform</span> realPanel = tempRoot.transform;
+
+    <span class="cm">// 2. Configuration du RectTransform pour le Layout</span>
+    <span class="type">RectTransform</span> rect = realPanel.GetComponent&lt;<span class="type">RectTransform</span>&gt;();
+    rect.anchorMin = <span class="kw">new</span> <span class="type">Vector2</span>(0, 1);
+    rect.anchorMax = <span class="kw">new</span> <span class="type">Vector2</span>(0, 1);
+    rect.pivot = <span class="kw">new</span> <span class="type">Vector2</span>(0.5f, 1f);
+    rect.anchoredPosition = <span class="type">Vector2</span>.zero;
+
+    <span class="cm">// 3. Attachement au conteneur cible</span>
+    realPanel.SetParent(container.ContainerModules.transform, <span class="kw">false</span>);
+
+    <span class="cm">// 4. Enregistrement auprès du script UI parent</span>
+    <span class="type">UIWindowBuildingModule</span> uiwindow = realPanel.GetComponent&lt;<span class="type">UIWindowBuildingModule</span>&gt;();
+    <span class="kw">if</span> (uiwindow != <span class="kw">null</span>)
+    {
+        uiwindow.Initialize(<span class="kw">this</span>);
+        container.AddModule(uiwindow);
+    }
+}</div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- SCRIPT JS POUR GERER LES PAGES -->
+    <script>
+        function switchPage(pageId) {
+            // Masquer toutes les pages
+            const pages = document.querySelectorAll('.page-content');
+            pages.forEach(page => page.classList.remove('active'));
+
+            // Réinitialiser l'état actif sur les liens de la sidebar
+            const links = document.querySelectorAll('.toc-link');
+            links.forEach(link => link.classList.remove('active'));
+
+            // Afficher la page sélectionnée
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+
+            // Mettre en surbrillance le lien sélectionné
+            event.currentTarget.classList.add('active');
+        }
+    </script>
 </body>
 </html>
