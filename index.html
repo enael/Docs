@@ -3,94 +3,399 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doc - Architecture Générale</title>
+    <title>Documentation UI - Système de Bâtiments</title>
+    <!-- Highlight.js pour la coloration syntaxique du C# -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+    <script>hljs.highlightAll();</script>
     <style>
-        :root {
-            --bg-main: #0f172a;
-            --bg-sidebar: #1e293b;
-            --card-bg: #1e293b;
-            --border-color: #334155;
-            --accent-color: #38bdf8;
-            --text-color: #f8fafc;
-            --text-muted: #94a3b8;
-            --code-bg: #0f172a;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg-main); color: var(--text-color); display: flex; height: 100vh; overflow: hidden; }
-        
-        /* Sidebar Navigation */
-        .sidebar { width: 280px; background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; }
-        .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); }
-        .sidebar-header h2 { color: var(--accent-color); font-size: 1.1rem; text-transform: uppercase; }
-        .toc-nav { flex: 1; padding: 1rem 0; }
-        .toc-link { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-muted); text-decoration: none; font-size: 0.95rem; border-left: 3px solid transparent; }
-        .toc-link:hover { background: rgba(255, 255, 255, 0.03); color: var(--text-color); }
-        .toc-link.active { color: var(--accent-color); border-left-color: var(--accent-color); background: rgba(56, 189, 248, 0.08); font-weight: bold; }
-        
-        /* Contenu */
-        .main-content { flex: 1; overflow-y: auto; padding: 2.5rem; }
-        .container { max-width: 900px; margin: 0 auto; }
-        header { margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
-        h1 { color: var(--accent-color); font-size: 1.8rem; margin-bottom: 0.5rem; }
-        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
-        h2 { color: var(--accent-color); font-size: 1.3rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
-        p { line-height: 1.6; margin-bottom: 1rem; }
-        ul { padding-left: 1.2rem; margin-bottom: 1rem; }
-        li { margin-bottom: 0.5rem; }
-        code { background: var(--code-bg); padding: 0.2rem 0.4rem; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; margin: 0; display: flex; color: #333; }
+        nav { width: 260px; background: #252526; color: #fff; padding: 20px; height: 100vh; position: fixed; overflow-y: auto; box-sizing: border-box; }
+        nav h2 { font-size: 1.1rem; color: #007acc; border-bottom: 1px solid #444; padding-bottom: 8px; }
+        nav ul { list-style: none; padding: 0; }
+        nav li { margin-bottom: 10px; }
+        nav a { color: #dcdcdc; text-decoration: none; font-size: 0.95rem; }
+        nav a:hover { color: #569cd6; }
+        main { margin-left: 260px; padding: 40px; max-width: 900px; width: 100%; }
+        .class-card { background: #fff; border: 1px solid #e1e4e8; border-radius: 6px; padding: 20px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        h1 { color: #1e1e1e; border-bottom: 2px solid #007acc; padding-bottom: 10px; }
+        h2 { color: #007acc; margin-top: 0; }
+        pre { border-radius: 6px; overflow-x: auto; font-size: 0.9rem; }
+        code { font-family: "Consolas", "Courier New", Courier, monospace; }
+        .badge { background: #e1f5fe; color: #0288d1; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <!-- TABLE DES MATIERES (SIDEBAR) -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h2>Navigation</h2>
-            <p style="font-size: 0.8rem; color: var(--text-muted);">Namespace : <code>GAME</code></p>
-        </div>
-        <nav class="toc-nav">
-            <a href="index.html" class="toc-link active">
-                📌 Vue d'ensemble & Types
-            </a>
-            <a href="building.html" class="toc-link">
-                🏛️ Classe Building
-            </a>
-            <a href="building-module.html" class="toc-link">
-                🧩 Classe BuildingModule
-            </a>
-        </nav>
-    </aside>
+    <nav>
+        <h2>Namespace GAME</h2>
+        <ul>
+            <li><a href="#BuildingUI">BuildingUI</a></li>
+            <li><a href="#UIBuildingModule">UIBuildingModule</a></li>
+            <li><a href="#UIWindowBuildingModule">UIWindowBuildingModule</a></li>
+            <li><a href="#UIWindowBuildingModulesContainer">UIWindowBuildingModulesContainer</a></li>
+            <li><a href="#InfoWindowBuilding">InfoWindowBuilding</a></li>
+        </ul>
+    </nav>
 
-    <!-- CONTENU PRINCIPAL -->
-    <main class="main-content">
-        <div class="container">
-            <header>
-                <h1>Vue d'Ensemble du Système de Bâtiments</h1>
-                <p style="color: var(--text-muted);">Documentation technique de l'architecture logicielle pour les structures et leurs modules.</p>
-            </header>
+    <main>
+        <h1>Documentation UI Bâtiments</h1>
 
-            <div class="card">
-                <h2>1. Description Générale</h2>
-                <p>Le système repose sur une architecture modulaire composée de trois piliers principaux :</p>
-                <ul>
-                    <li><strong>Building :</strong> L'entité centrale gérant le statut général, les inventaires permanents et temporaires, le visuel et les accès des unités.</li>
-                    <li><strong>BuildingModule :</strong> Composant dérivable attaché à un bâtiment pour lui fournir des comportements spécifiques (stockage, production, défense, etc.).</li>
-                    <li><strong>BuildingSlot :</strong> Point d'ancrage liant un <code>BuildingModule</code> à son hôte <code>Building</code>.</li>
-                </ul>
-            </div>
+        <!-- BuildingUI -->
+        <section id="BuildingUI" class="class-card">
+            <h2>BuildingUI <span class="badge">MonoBehaviour</span></h2>
+            <p>Gère l'affichage UI ancré au-dessus d'un objet 3D dans le monde (World To Screen Space) et réarrange ses modules enfants.</p>
+            <pre><code class="language-csharp">using System.Collections.Generic;
+using UnityEngine;
 
-            <div class="card">
-                <h2>2. Enumérations de Base</h2>
-                <p><strong><code>MODULE_TYPE</code></strong> : Définit la catégorie fonctionnelle d'un module.</p>
-                <ul>
-                    <li><code>OCCUPANCY</code> : Gestion des habitants et travailleurs.</li>
-                    <li><code>STORAGE</code> : Extension des capacités de stock.</li>
-                    <li><code>WORKSHOP</code> : Production et artisanat.</li>
-                    <li><code>DEFENSE</code> : Tourelles et structures de garde.</li>
-                    <li><code>EXTENSION</code> : Agragations diverses.</li>
-                </ul>
-            </div>
-        </div>
+namespace GAME
+{
+    [RequireComponent(typeof(RectTransform))]
+    public class BuildingUI : GameObjectUI, UILanguage
+    {
+        public GameObject ModulesContainer;
+        private List&lt;UIBuildingModule&gt; moduleUIs = new List&lt;UIBuildingModule&gt;();
+
+        [Tooltip("L'objet 3D dans le monde au-dessus duquel l'UI doit s'afficher")]
+        public GameObject UIPivotPoint;
+
+        public override void Start()
+        {
+            base.Start();
+        }
+
+        public virtual void Update()
+        {
+            UpdateUIPosition();
+        }
+
+        public void AddModule(UIBuildingModule module)
+        {
+            if (module == null) return;
+            module.transform.SetParent(ModulesContainer.transform, false);
+            moduleUIs.Add(module);
+            RearrangeModules();
+        }
+
+        public void RemoveModule(UIBuildingModule module)
+        {
+            if (module == null) return;
+            moduleUIs.Remove(module);
+            if (module.gameObject != null) Destroy(module.gameObject);
+            RearrangeModules();
+        }
+
+        private void RearrangeModules()
+        {
+            for (int i = 0; i < moduleUIs.Count; i++)
+                moduleUIs[i].transform.SetSiblingIndex(i);
+
+            this.gameObject.RebuidLayout();
+            UpdateUIPosition();
+        }
+
+        private void UpdateUIPosition()
+        {
+            if (UIPivotPoint == null) return;
+
+            Canvas rootCanvas = GetComponentInParent&lt;Canvas&gt;().rootCanvas;
+            Camera uiCamera = rootCanvas.worldCamera;
+
+            Vector2 screenPosition = RectTransformUtility.WorldToScreenPoint(
+                uiCamera != null ? uiCamera : null,
+                UIPivotPoint.transform.position);
+
+            if (rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                transform.position = screenPosition;
+            }
+            else if (uiCamera != null)
+            {
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    transform.parent as RectTransform,
+                    screenPosition,
+                    uiCamera,
+                    out Vector2 localPosition);
+
+                transform.localPosition = localPosition;
+            }
+            else if (rootCanvas.renderMode == RenderMode.WorldSpace)
+            {
+                transform.position = UIPivotPoint.transform.position;
+            }
+        }
+
+        public void Language() { }
+    }
+}</code></pre>
+        </section>
+
+        <!-- UIBuildingModule -->
+        <section id="UIBuildingModule" class="class-card">
+            <h2>UIBuildingModule <span class="badge">MonoBehaviour</span></h2>
+            <p>Classe de base pour un module individuel rattaché à une UI de bâtiment.</p>
+            <pre><code class="language-csharp">using UnityEngine;
+
+namespace GAME
+{
+    public class UIBuildingModule : MonoBehaviour
+    {
+        public BuildingModule Module;
+
+        public virtual void Initialize(BuildingModule module)
+        {
+            Module = module;
+        }
+    }
+}</code></pre>
+        </section>
+
+        <!-- UIWindowBuildingModule -->
+        <section id="UIWindowBuildingModule" class="class-card">
+            <h2>UIWindowBuildingModule <span class="badge">UILanguage</span></h2>
+            <p>Base pour les modules affichés dans une fenêtre avec gestion du texte localisé et cycle de validation (Apply/Cancel).</p>
+            <pre><code class="language-csharp">using TMPro;
+using UnityEngine;
+
+namespace GAME
+{
+    public class UIWindowBuildingModule : MonoBehaviour, UILanguage
+    {
+        public string Title;
+        public TextMeshProUGUI TitleField;
+
+        public virtual void Initialize(BuildingModule module)
+        {
+            Langs.AddHandler(Language);
+        }
+
+        public virtual void Language()
+        {
+            TitleField.text = Langs.GetText(Title);
+        }
+
+        public virtual bool NeedValidation() => false;
+
+        public virtual void Apply() { }
+
+        public virtual void Cancel() { }
+
+        public void OnDestroy()
+        {
+            Langs.RemoveHandler(Language);
+        }
+    }
+}</code></pre>
+        </section>
+
+        <!-- UIWindowBuildingModulesContainer -->
+        <section id="UIWindowBuildingModulesContainer" class="class-card">
+            <h2>UIWindowBuildingModulesContainer <span class="badge">UIWindowStack</span></h2>
+            <p>Conteneur de fenêtre gérant une liste de modules, recalculant le layout dynamique et gérant la validation globale.</p>
+            <pre><code class="language-csharp">using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace GAME
+{
+    public class UIWindowBuildingModulesContainer : UIWindowStack
+    {
+        public Building Building;
+        public Text BuildingText;
+        public GameObject ContainerModules;
+        private List&lt;UIWindowBuildingModule&gt; modules = new List&lt;UIWindowBuildingModule&gt;();
+
+        public void InitializeContainer(Building building)
+        {
+            Building = building;
+
+            bool needValidation = false;
+            foreach (var module in modules)
+            {
+                if (module.NeedValidation())
+                {
+                    needValidation = true;
+                    break;
+                }
+            }
+
+            if (YesButton != null) YesButton.gameObject.SetActive(needValidation);
+            if (NoButton != null) NoButton.gameObject.SetActive(needValidation);
+
+            Langs.AddHandler(Language);
+        }
+
+        public override int Open(IDictionary&lt;string, object&gt; p)
+        {
+            if (ContainerModules != null)
+            {
+                RectTransform containerRect = ContainerModules.GetComponent&lt;RectTransform&gt;();
+
+                foreach (Transform child in ContainerModules.transform)
+                {
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(child.GetComponent&lt;RectTransform&gt;());
+                }
+
+                LayoutRebuilder.ForceRebuildLayoutImmediate(containerRect);
+
+                RectTransform panel = this.GetComponent&lt;RectTransform&gt;().GetWorkingRect();
+                LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
+            }
+
+            return base.Open(p);
+        }
+
+        protected override void CloseWindow(UIWINDOWSTACK_EVENT evt)
+        {
+            if (evt == UIWINDOWSTACK_EVENT.YES)
+            {
+                foreach (var module in modules) module.Apply();
+            }
+            else if (evt == UIWINDOWSTACK_EVENT.NO)
+            {
+                foreach (var module in modules) module.Cancel();
+            }
+
+            base.CloseWindow(evt);
+        }
+
+        public void AddModule(UIWindowBuildingModule module)
+        {
+            if (module == null) return;
+            modules.Add(module);
+        }
+
+        public void RemoveModule(UIWindowBuildingModule module)
+        {
+            if (module == null) return;
+            modules.Remove(module);
+        }
+
+        public void ClearModules()
+        {
+            for (int i = modules.Count - 1; i >= 0; i--)
+            {
+                if (modules[i] != null && modules[i].gameObject != null)
+                    Destroy(modules[i].gameObject);
+            }
+            modules.Clear();
+        }
+
+        public void Language()
+        {
+            BuildingText.text = Langs.GetText(Building.Type.ToString());
+        }
+
+        public void OnDestroy()
+        {
+            Langs.RemoveHandler(Language);
+        }
+    }
+}</code></pre>
+        </section>
+
+        <!-- InfoWindowBuilding -->
+        <section id="InfoWindowBuilding" class="class-card">
+            <h2>InfoWindowBuilding <span class="badge">UILanguage</span></h2>
+            <p>Fenêtre d'information sur un bâtiment permettant d'activer/désactiver le bâtiment et de gérer la zone d'effet (cercle persistant).</p>
+            <pre><code class="language-csharp">using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace GAME
+{
+    public class InfoWindowBuilding : UIWindowStack, UILanguage
+    {
+        public TextMeshProUGUI Title;
+        public Building Building;
+        public bool UseEnableButton;
+        public GameObject Enable;
+        public GameObject Disable;
+        public bool BuildingEnable;
+        public Toggle TogglePersistentCircle;
+
+        public void InitializeEnable()
+        {
+            if (UseEnableButton)
+            {
+                if (Enable != null)
+                {
+                    Enable.GetComponent&lt;Button&gt;().onClick.AddListener(EnableBulding);
+                    Disable.GetComponent&lt;Button&gt;().onClick.AddListener(DisableBulding);
+                }
+            }
+            else
+            {
+                if (Enable != null) Enable.SetActive(false);
+                if (Disable != null) Disable.SetActive(false);
+            }
+
+            if (TogglePersistentCircle != null)
+                TogglePersistentCircle.onValueChanged.AddListener(
+                    delegate { PersistentCircleToggleChange(); });
+        }
+
+        public virtual void Initialize(Building building)
+        {
+            Building = building;
+
+            if (UseEnableButton)
+            {
+                BuildingEnable = Building.Enable;
+                if (Enable != null)
+                {
+                    Enable.SetActive(BuildingEnable);
+                    Disable.SetActive(!BuildingEnable);
+                }
+            }
+            else
+                BuildingEnable = Building.Enable;
+
+            if (TogglePersistentCircle != null)
+                TogglePersistentCircle.isOn = building.PersistentCircle;
+
+            InitializeEnable();
+            Langs.AddHandler(Language);
+        }
+
+        public virtual void Work() { }
+
+        public virtual void EnableBulding()
+        {
+            BuildingEnable = false;
+            Enable.SetActive(false);
+            Disable.SetActive(true);
+        }
+
+        public virtual void DisableBulding()
+        {
+            BuildingEnable = true;
+            Enable.SetActive(true);
+            Disable.SetActive(false);
+        }
+
+        public virtual void OnEnable() { }
+        public virtual void OnDisable() { }
+
+        public void PersistentCircleToggleChange()
+        {
+            Building.SetPersistentCircle(TogglePersistentCircle.isOn);
+        }
+
+        public virtual void Language()
+        {
+            if (Building != null)
+                Title.text = Langs.GetText(Building.Name);
+        }
+
+        public void OnDestroy()
+        {
+            Langs.RemoveHandler(Language);
+        }
+    }
+}</code></pre>
+        </section>
     </main>
 
 </body>
