@@ -3,442 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Documentation Technique - Système de Bâtiments & Modules</title>
+    <title>Doc - Architecture Générale</title>
     <style>
         :root {
             --bg-main: #0f172a;
             --bg-sidebar: #1e293b;
             --card-bg: #1e293b;
-            --card-inner: #0f172a;
             --border-color: #334155;
             --accent-color: #38bdf8;
-            --accent-hover: #0284c7;
             --text-color: #f8fafc;
             --text-muted: #94a3b8;
-            --code-color: #e2e8f0;
-            --type-color: #a855f7;
-            --variable-color: #f59e0b;
-            --keyword-color: #f43f5e;
-            --comment-color: #64748b;
+            --code-bg: #0f172a;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-color);
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* --- SIDEBAR / TABLE DES MATIERES --- */
-        .sidebar {
-            width: 280px;
-            background-color: var(--bg-sidebar);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-        }
-
-        .sidebar-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .sidebar-header h2 {
-            font-size: 1.1rem;
-            color: var(--accent-color);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .sidebar-header p {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
-        }
-
-        .toc-nav {
-            flex: 1;
-            padding: 1rem 0;
-            overflow-y: auto;
-        }
-
-        .toc-link {
-            display: flex;
-            align-items: center;
-            padding: 0.8rem 1.5rem;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.95rem;
-            border-left: 3px solid transparent;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .toc-link:hover {
-            background-color: rgba(255, 255, 255, 0.03);
-            color: var(--text-color);
-        }
-
-        .toc-link.active {
-            color: var(--accent-color);
-            border-left-color: var(--accent-color);
-            background-color: rgba(56, 189, 248, 0.08);
-            font-weight: 600;
-        }
-
-        .toc-icon {
-            margin-right: 0.75rem;
-            font-size: 1.1rem;
-        }
-
-        /* --- CONTENU PRINCIPAL --- */
-        .main-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 2.5rem;
-        }
-
-        .page-content {
-            display: none;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .page-content.active {
-            display: block;
-            animation: fadeIn 0.25s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        header {
-            margin-bottom: 2rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 1rem;
-        }
-
-        h1 {
-            color: var(--accent-color);
-            font-size: 1.8rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 1rem;
-        }
-
-        .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        h2 {
-            color: var(--accent-color);
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.5rem;
-        }
-
-        p {
-            margin-bottom: 1rem;
-            line-height: 1.6;
-        }
-
-        ul {
-            padding-left: 1.2rem;
-            margin-bottom: 1rem;
-        }
-
-        li {
-            margin-bottom: 0.4rem;
-        }
-
-        /* --- TABLEAUX --- */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        th, td {
-            text-align: left;
-            padding: 0.75rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        th {
-            background-color: var(--card-inner);
-            color: var(--accent-color);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-        }
-
-        tr:hover {
-            background-color: rgba(255, 255, 255, 0.02);
-        }
-
-        /* --- CODE & TYPOGRAPHIE --- */
-        code {
-            background-color: var(--card-inner);
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            font-family: "Fira Code", Consolas, Monaco, monospace;
-            font-size: 0.88em;
-            color: var(--code-color);
-        }
-
-        .code-block {
-            background-color: var(--card-inner);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 1rem;
-            font-family: "Fira Code", Consolas, Monaco, monospace;
-            font-size: 0.85rem;
-            line-height: 1.5;
-            overflow-x: auto;
-            white-space: pre;
-            margin: 1rem 0;
-            color: var(--code-color);
-        }
-
-        .type { color: var(--type-color); }
-        .var { color: var(--variable-color); }
-        .kw { color: var(--keyword-color); }
-        .cm { color: var(--comment-color); }
-
-        .badge {
-            display: inline-block;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .badge-enum { background-color: #0369a1; color: #e0f2fe; }
-        .badge-class { background-color: #6b21a8; color: #f3e8ff; }
-        .badge-struct { background-color: #854d0e; color: #fef3c7; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg-main); color: var(--text-color); display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Sidebar Navigation */
+        .sidebar { width: 280px; background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; }
+        .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); }
+        .sidebar-header h2 { color: var(--accent-color); font-size: 1.1rem; text-transform: uppercase; }
+        .toc-nav { flex: 1; padding: 1rem 0; }
+        .toc-link { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-muted); text-decoration: none; font-size: 0.95rem; border-left: 3px solid transparent; }
+        .toc-link:hover { background: rgba(255, 255, 255, 0.03); color: var(--text-color); }
+        .toc-link.active { color: var(--accent-color); border-left-color: var(--accent-color); background: rgba(56, 189, 248, 0.08); font-weight: bold; }
+        
+        /* Contenu */
+        .main-content { flex: 1; overflow-y: auto; padding: 2.5rem; }
+        .container { max-width: 900px; margin: 0 auto; }
+        header { margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
+        h1 { color: var(--accent-color); font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        h2 { color: var(--accent-color); font-size: 1.3rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+        p { line-height: 1.6; margin-bottom: 1rem; }
+        ul { padding-left: 1.2rem; margin-bottom: 1rem; }
+        li { margin-bottom: 0.5rem; }
+        code { background: var(--code-bg); padding: 0.2rem 0.4rem; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
     </style>
 </head>
 <body>
 
-    <!-- TABLE DES MATIÈRES (SIDEBAR) -->
+    <!-- TABLE DES MATIERES (SIDEBAR) -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <h2>Doc Technique</h2>
-            <p>Espace de nom : <code>GAME</code></p>
+            <h2>Navigation</h2>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">Namespace : <code>GAME</code></p>
         </div>
         <nav class="toc-nav">
-            <a class="toc-link active" onclick="switchPage('page-architecture')">
-                <span class="toc-icon">🏗️</span> Architecture Globale
+            <a href="index.html" class="toc-link active">
+                📌 Vue d'ensemble & Types
             </a>
-            <a class="toc-link" onclick="switchPage('page-building')">
-                <span class="toc-icon">🏛️</span> Structure Building
+            <a href="building.html" class="toc-link">
+                🏛️ Classe Building
             </a>
-            <a class="toc-link" onclick="switchPage('page-modules')">
-                <span class="toc-icon">🧩</span> Module & UI System
+            <a href="building-module.html" class="toc-link">
+                🧩 Classe BuildingModule
             </a>
         </nav>
     </aside>
 
-    <!-- ZONE DE CONTENU PRINCIPALE -->
+    <!-- CONTENU PRINCIPAL -->
     <main class="main-content">
-
-        <!-- ================= PAGE 1 : ARCHITECTURE GLOBALE ================= -->
-        <section id="page-architecture" class="page-content active">
+        <div class="container">
             <header>
-                <h1>Page 1 : Architecture Globale du Système</h1>
-                <p class="subtitle">Vue d'ensemble de la structure C# Unity pour la gestion des bâtiments et modules.</p>
+                <h1>Vue d'Ensemble du Système de Bâtiments</h1>
+                <p style="color: var(--text-muted);">Documentation technique de l'architecture logicielle pour les structures et leurs modules.</p>
             </header>
 
             <div class="card">
-                <h2>1. Enumérations & Types de Base</h2>
-                <p>Le fichier définit les catégories de modules avec <span class="badge badge-enum">ENUM</span> <code>MODULE_TYPE</code> :</p>
-                
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Valeur Enum</th>
-                            <th>Usage / Rôle</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td><code>OCCUPANCY</code></td><td>Gestion de l'occupation et des habitants/travailleurs.</td></tr>
-                        <tr><td><code>STORAGE</code></td><td>Gestion des ressources et des stocks.</td></tr>
-                        <tr><td><code>WORKSHOP</code></td><td>Atelier de fabrication ou de transformation.</td></tr>
-                        <tr><td><code>DEFENSE</code></td><td>Structures défensives et tourelles.</td></tr>
-                        <tr><td><code>EXTENSION</code></td><td>Extensions de bâtiment générales.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="card">
-                <h2>2. Structure d'Emplacement : <code>BuildingSlot</code></h2>
-                <p><span class="badge badge-struct">SERIALIZABLE</span> Représente un slot sur un bâtiment où des modules peuvent être ancrés.</p>
-                
-                <div class="code-block"><span class="kw">public class</span> <span class="type">BuildingSlot</span>
-{
-    <span class="kw">public</span> <span class="type">List</span>&lt;<span class="type">GameObject</span>&gt; <span class="var">Modules</span>; <span class="cm">// Liste des GameObjects de prévisualisation/variantes</span>
-    <span class="kw">public</span> <span class="type">BuildingModule</span> <span class="var">Module</span>;     <span class="cm">// Instance du module actif dans ce slot</span>
-}</div>
-            </div>
-        </section>
-
-        <!-- ================= PAGE 2 : BUILDING ================= -->
-        <section id="page-building" class="page-content">
-            <header>
-                <h1>Page 2 : Classe Building & Inventaires</h1>
-                <p class="subtitle">Spécification des éléments centraux du composant principal <code>Building</code>.</p>
-            </header>
-
-            <div class="card">
-                <h2>1. Attributs Clés du Building</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Variable</th>
-                            <th>Type</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code class="var">UI</code></td>
-                            <td><span class="type">UIBuilding</span></td>
-                            <td>Interface graphique du bâtiment hébergeant les UIs des modules.</td>
-                        </tr>
-                        <tr>
-                            <td><code class="var">Storages</code></td>
-                            <td><span class="type">List&lt;Storage&gt;</span></td>
-                            <td>Réserves permanentes gérées par le bâtiment.</td>
-                        </tr>
-                        <tr>
-                            <td><code class="var">Slots</code></td>
-                            <td><span class="type">List&lt;BuildingSlot&gt;</span></td>
-                            <td>Emplacements disponibles pour équiper des modules.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="card">
-                <h2>2. Méthodes Appelées par les Modules</h2>
+                <h2>1. Description Générale</h2>
+                <p>Le système repose sur une architecture modulaire composée de trois piliers principaux :</p>
                 <ul>
-                    <li><code class="type">Storage</code> <strong class="var">GetStorage</strong>(<code>RESOURCE resource</code>) : Recherche et réserve un stockage libre adapté à la ressource.</li>
-                    <li><code class="type">void</code> <strong class="var">UnreserveStorage</strong>(<code>Storage storage</code>) : Libère l'accès à un stockage précédemment réservé par un module.</li>
-                    <li><code class="type">void</code> <strong class="var">DestroyAllStorages</strong>(<code>List&lt;Storage&gt; storages</code>) : Supprime définitivement la liste de stockages spécifiée.</li>
-                </ul>
-            </div>
-        </section>
-
-        <!-- ================= PAGE 3 : MODULES & UI ================= -->
-        <section id="page-modules" class="page-content">
-            <header>
-                <h1>Page 3 : Classe BuildingModule & Interface UI</h1>
-                <p class="subtitle">Gestion des comportements, des ressources et des fenêtres dynamiques.</p>
-            </header>
-
-            <div class="card">
-                <h2>1. Variables de <code>BuildingModule</code></h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Variable</th>
-                            <th>Type</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td><code class="var">UI</code></td><td><span class="type">UIBuildingModule</span></td><td>Préfab UI pour la vue raccourcie/liste du bâtiment.</td></tr>
-                        <tr><td><code class="var">UIWindow</code></td><td><span class="type">GameObject</span></td><td>Préfab de la fenêtre détaillée (instancié dynamiquement).</td></tr>
-                        <tr><td><code class="var">Building</code></td><td><span class="type">Building</span></td><td>Référence vers le bâtiment maître.</td></tr>
-                        <tr><td><code class="var">Storages</code></td><td><span class="type">List&lt;Storage&gt;</span></td><td>Liste des stockages actuellement gérés par ce module.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="card">
-                <h2>2. Méthodes du Cycle de Vie du Module</h2>
-                <ul>
-                    <li><code class="type">virtual void</code> <strong class="var">Install</strong>(<code>Building building</code>) : Initialise le module, duplique son UI et l'associe au bâtiment.</li>
-                    <li><code class="type">virtual void</code> <strong class="var">Uninstall</strong>() : Déconnecte l'UI et libère tous les stockages réservés.</li>
-                    <li><code class="type">virtual void</code> <strong class="var">Work</strong>() : Point d'entrée virtuel exécuté à chaque cycle de travail du module.</li>
+                    <li><strong>Building :</strong> L'entité centrale gérant le statut général, les inventaires permanents et temporaires, le visuel et les accès des unités.</li>
+                    <li><strong>BuildingModule :</strong> Composant dérivable attaché à un bâtiment pour lui fournir des comportements spécifiques (stockage, production, défense, etc.).</li>
+                    <li><strong>BuildingSlot :</strong> Point d'ancrage liant un <code>BuildingModule</code> à son hôte <code>Building</code>.</li>
                 </ul>
             </div>
 
             <div class="card">
-                <h2>3. Gestion de l'UI Détaillée (<code>CreateDetailedUI</code>)</h2>
-                <p>La méthode <code class="var">CreateDetailedUI</code> est responsable du réparentage dynamique d'une fenêtre dans le conteneur UI :</p>
-
-                <div class="code-block"><span class="kw">public void</span> <span class="var">CreateDetailedUI</span>(<span class="type">UIWindowBuildingModulesContainer</span> container)
-{
-    <span class="kw">if</span> (UIWindow == <span class="kw">null</span>) <span class="kw">return</span>;
-
-    <span class="cm">// 1. Instanciation du préfab UI</span>
-    <span class="type">GameObject</span> tempRoot = Instantiate(UIWindow);
-    <span class="type">Transform</span> realPanel = tempRoot.transform;
-
-    <span class="cm">// 2. Configuration du RectTransform pour le Layout</span>
-    <span class="type">RectTransform</span> rect = realPanel.GetComponent&lt;<span class="type">RectTransform</span>&gt;();
-    rect.anchorMin = <span class="kw">new</span> <span class="type">Vector2</span>(0, 1);
-    rect.anchorMax = <span class="kw">new</span> <span class="type">Vector2</span>(0, 1);
-    rect.pivot = <span class="kw">new</span> <span class="type">Vector2</span>(0.5f, 1f);
-    rect.anchoredPosition = <span class="type">Vector2</span>.zero;
-
-    <span class="cm">// 3. Attachement au conteneur cible</span>
-    realPanel.SetParent(container.ContainerModules.transform, <span class="kw">false</span>);
-
-    <span class="cm">// 4. Enregistrement auprès du script UI parent</span>
-    <span class="type">UIWindowBuildingModule</span> uiwindow = realPanel.GetComponent&lt;<span class="type">UIWindowBuildingModule</span>&gt;();
-    <span class="kw">if</span> (uiwindow != <span class="kw">null</span>)
-    {
-        uiwindow.Initialize(<span class="kw">this</span>);
-        container.AddModule(uiwindow);
-    }
-}</div>
+                <h2>2. Enumérations de Base</h2>
+                <p><strong><code>MODULE_TYPE</code></strong> : Définit la catégorie fonctionnelle d'un module.</p>
+                <ul>
+                    <li><code>OCCUPANCY</code> : Gestion des habitants et travailleurs.</li>
+                    <li><code>STORAGE</code> : Extension des capacités de stock.</li>
+                    <li><code>WORKSHOP</code> : Production et artisanat.</li>
+                    <li><code>DEFENSE</code> : Tourelles et structures de garde.</li>
+                    <li><code>EXTENSION</code> : Agragations diverses.</li>
+                </ul>
             </div>
-        </section>
-
+        </div>
     </main>
 
-    <!-- SCRIPT JS POUR GERER LES PAGES -->
-    <script>
-        function switchPage(pageId) {
-            // Masquer toutes les pages
-            const pages = document.querySelectorAll('.page-content');
-            pages.forEach(page => page.classList.remove('active'));
-
-            // Réinitialiser l'état actif sur les liens de la sidebar
-            const links = document.querySelectorAll('.toc-link');
-            links.forEach(link => link.classList.remove('active'));
-
-            // Afficher la page sélectionnée
-            const targetPage = document.getElementById(pageId);
-            if (targetPage) {
-                targetPage.classList.add('active');
-            }
-
-            // Mettre en surbrillance le lien sélectionné
-            event.currentTarget.classList.add('active');
-        }
-    </script>
 </body>
 </html>
