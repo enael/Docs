@@ -1,97 +1,424 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doc - Architecture Générale</title>
-    <style>
-        :root {
-            --bg-main: #0f172a;
-            --bg-sidebar: #1e293b;
-            --card-bg: #1e293b;
-            --border-color: #334155;
-            --accent-color: #38bdf8;
-            --text-color: #f8fafc;
-            --text-muted: #94a3b8;
-            --code-bg: #0f172a;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg-main); color: var(--text-color); display: flex; height: 100vh; overflow: hidden; }
-        
-        /* Sidebar Navigation */
-        .sidebar { width: 280px; background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; }
-        .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); }
-        .sidebar-header h2 { color: var(--accent-color); font-size: 1.1rem; text-transform: uppercase; }
-        .toc-nav { flex: 1; padding: 1rem 0; }
-        .toc-link { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-muted); text-decoration: none; font-size: 0.95rem; border-left: 3px solid transparent; }
-        .toc-link:hover { background: rgba(255, 255, 255, 0.03); color: var(--text-color); }
-        .toc-link.active { color: var(--accent-color); border-left-color: var(--accent-color); background: rgba(56, 189, 248, 0.08); font-weight: bold; }
-        
-        /* Contenu */
-        .main-content { flex: 1; overflow-y: auto; padding: 2.5rem; }
-        .container { max-width: 900px; margin: 0 auto; }
-        header { margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
-        h1 { color: var(--accent-color); font-size: 1.8rem; margin-bottom: 0.5rem; }
-        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
-        h2 { color: var(--accent-color); font-size: 1.3rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
-        p { line-height: 1.6; margin-bottom: 1rem; }
-        ul { padding-left: 1.2rem; margin-bottom: 1rem; }
-        li { margin-bottom: 0.5rem; }
-        code { background: var(--code-bg); padding: 0.2rem 0.4rem; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
-    </style>
-</head>
-<body>
+# Résumé global du code C# – Namespace GAME
 
-    <!-- TABLE DES MATIERES (SIDEBAR) -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h2>Navigation</h2>
-            <p style="font-size: 0.8rem; color: var(--text-muted);">Namespace : <code>GAME</code></p>
-        </div>
-        <nav class="toc-nav">
-            <a href="index.html" class="toc-link active">
-                📌 Vue d'ensemble & Types
-            </a>
-            <a href="building.html" class="toc-link">
-                🏛️ Classe Building
-            </a>
-            <a href="building-module.html" class="toc-link">
-                🧩 Classe BuildingModule
-            </a>
-        </nav>
-    </aside>
+## 0. Métadonnées
+- Langage : C#
+- Framework : Unity
+- Namespace : GAME
+- Fichiers analysés :
+  - `Building.cs`
+  - `BuildingModule.cs` (inclut `BuildingSlot`)
+  - `BuildingUI.cs`
+  - `UIWindowBuildingModulesContainer.cs`
+  - `InfoWindowBuilding.cs`
+  - `UIBuildingModule.cs`
+  - `UIWindowBuildingModule.cs`
+- Date : 2026-09-11
 
-    <!-- CONTENU PRINCIPAL -->
-    <main class="main-content">
-        <div class="container">
-            <header>
-                <h1>Vue d'Ensemble du Système de Bâtiments</h1>
-                <p style="color: var(--text-muted);">Documentation technique de l'architecture logicielle pour les structures et leurs modules.</p>
-            </header>
+## 1. Vue d’ensemble
+Ce code implémente un système de bâtiments pour un jeu Unity.
+Un `Building` est un MonoBehaviour qui gère :
+- son cycle de vie : placement, construction, complet ;
+- ses unités (`Unit`) ;
+- ses stockages (`Storage`) permanents et de construction ;
+- ses modules (`BuildingModule`) installés dans des `BuildingSlot` ;
+- son UI dans le monde (`BuildingUI`) et ses fenêtres d’information (`UIWindowBuildingModulesContainer`, `InfoWindowBuilding`).
 
-            <div class="card">
-                <h2>1. Description Générale</h2>
-                <p>Le système repose sur une architecture modulaire composée de trois piliers principaux :</p>
-                <ul>
-                    <li><strong>Building :</strong> L'entité centrale gérant le statut général, les inventaires permanents et temporaires, le visuel et les accès des unités.</li>
-                    <li><strong>BuildingModule :</strong> Composant dérivable attaché à un bâtiment pour lui fournir des comportements spécifiques (stockage, production, défense, etc.).</li>
-                    <li><strong>BuildingSlot :</strong> Point d'ancrage liant un <code>BuildingModule</code> à son hôte <code>Building</code>.</li>
-                </ul>
-            </div>
+Les modules (`BuildingModule`) sont des composants attachés à un bâtiment. Ils peuvent réserver des stockages, exécuter une logique (`Work`), et générer une UI détaillée dans la fenêtre d’information.
 
-            <div class="card">
-                <h2>2. Enumérations de Base</h2>
-                <p><strong><code>MODULE_TYPE</code></strong> : Définit la catégorie fonctionnelle d'un module.</p>
-                <ul>
-                    <li><code>OCCUPANCY</code> : Gestion des habitants et travailleurs.</li>
-                    <li><code>STORAGE</code> : Extension des capacités de stock.</li>
-                    <li><code>WORKSHOP</code> : Production et artisanat.</li>
-                    <li><code>DEFENSE</code> : Tourelles et structures de garde.</li>
-                    <li><code>EXTENSION</code> : Agragations diverses.</li>
-                </ul>
-            </div>
-        </div>
-    </main>
+## 2. Table des matières
+1. Building.cs
+2. BuildingModule.cs
+3. BuildingUI.cs
+4. UIWindowBuildingModulesContainer.cs
+5. InfoWindowBuilding.cs
+6. UIBuildingModule.cs
+7. UIWindowBuildingModule.cs
+8. Diagramme de dépendances
+9. Notes et pièges
 
-</body>
-</html>
+---
+
+## 1. Building.cs
+
+### Rôle
+Classe principale représentant un bâtiment. Elle gère l’état, les modules, les stockages, les unités, le placement, la construction et l’UI.
+
+### Enums
+
+```csharp
+public enum BUILDING_CATEGORIES : int
+{
+    OTHER = 0,
+    CIVILIAN = 1,
+    ECONOMIC = 2,
+    MILITARY = 3,
+    RELIGIOUS = 4,
+    DECORATION = 5,
+    TOURISM = 6
+}
+
+public enum BUILDING_STATUS : int
+{
+    NONE = 0,
+    PLACEMENT = 1,
+    CONSTRUCTION = 2,
+    COMPLETE = 3
+}
+
+public enum BUILDING : int
+{
+    BARN = 1,
+    WELL = 2,
+    STORAGE_AREA = 3,
+    SHELTER = 4,
+    BANNER = 6,
+    VILLAGE_LIGHTHOUSE = 7,
+    FIELD = 8,
+    FIRE_TOWER = 9,
+    FISHING_CABIN = 10,
+    CHURCH = 11,
+    WATCH_TOWER = 12,
+    FURNACE = 14,
+    STONE_QUARY = 15,
+    HARBOR = 16,
+    BOAT_MAKER = 17,
+    BAKERY = 18,
+    FARM = 19,
+    TAVERN = 20,
+    BLACKSMITH = 21,
+    BUTCHER = 22,
+    MILL = 23,
+    PLANKS_FACTORY = 24,
+    CARTOGRAPHER = 25,
+    FIRE_TOTEM = 26,
+    CAMP_FIRE_MEAT = 27,
+    MUSHROOM_PICKERS_HOUSE = 28,
+    LIGHTHOUSE = 29,
+    POTTERY_MAKER = 30,
+    PIGMENTS_FACTORY = 31,
+    CHOCOLATE_SHOP = 32,
+    POTTERIES_SHOP = 33,
+    ANIMAL_ENCLOSURE = 34,
+    COMMERCIAL_HARBOR = 35,
+    REFRESHMENT_BAR = 36,
+    HIVES = 37,
+    FIELD_MUSHROOMS = 38,
+    BASIC_BLACKSMITH = 39,
+    MILITARY_CAMP = 40,
+    GUARD_POST = 41,
+    TENT = 50,
+    HUT_HOUSE = 51,
+    MAGIC_HOUSE = 52,
+    HOUSE_TREE = 53,
+    HOUSE_ARTIST = 54,
+    HOUSE_SCULPTOR = 55,
+    HUT_1 = 58,
+    HUT_2 = 59,
+    HUT_3 = 60,
+    HUT_4 = 61,
+    HUT_SLAVE = 70,
+    HOUSE_ARISTOCRAT = 71,
+    HOUSE_BASIC = 72,
+    COTTAGE = 73,
+    OBELISK_1 = 100,
+    LAMP_1 = 101,
+    FOUNTAIN_1 = 102,
+    POND = 103
+}
+Classe Building : MonoBehaviour
+Variables et propriétés
+Nom	Type	Visibilité	Rôle
+Name	string	public	Nom du bâtiment
+Type	BUILDING	public	Type de bâtiment
+Player	Player	public	Joueur propriétaire
+Terrain	MyTerrain	public	Terrain où est placé le bâtiment
+Status	BUILDING_STATUS	public	État actuel
+currentColor	COLOR	private	Couleur actuelle des matériaux
+ConfigID	int	public (get)	ID de configuration
+Selected	Building	public static	Bâtiment sélectionné
+UI	BuildingUI	public	UI monde du bâtiment
+InfoWindow	InfoWindowBuilding	public	Fenêtre d’information (ancienne)
+ID	int	public	ID unique
+emissive	bool	private	État d’émission nocturne
+EmissiveObjects	List<GameObject>	public	Objets émissifs
+NightLights	List<GameObject>	public	Lumières nocturnes
+Enable	bool	public	Bâtiment activé/désactivé
+Entrance	GameObject	public	Point d’entrée
+InUnits	List<Unit>	public	Unités à l’intérieur
+ExitingUnits	List<Unit>	public	Unités en sortie
+LastExitTime	uint	public	Dernier temps de sortie
+groundRotation	float	private	Rotation du sol
+PlacementShowCircles	List<BUILDING>	public	Types de bâtiments dont on affiche le cercle
+TerrainCircle	TerrainCircle	public	Cercle de terrain
+Area	float	public	Rayon de zone
+AreaColor	COLOR	public	Couleur de zone
+PersistentCircle	bool	public	Cercle persistant
+ObjectsAnexes	List<GameObject>	public	Objets annexes
+ObjectsAnexesProba	float	public	Probabilité d’apparition
+constructionModule	ConstructionModule	public	Module de construction
+modulesContainer	GameObject	public	Conteneur des modules
+Slots	List<BuildingSlot>	public	Slots de modules
+StoragesBounds	List<GameObject>	public	Zones de stockage permanent
+Storages	List<Storage>	public	Stockages permanents
+ConstructionStoragesBounds	List<GameObject>	public	Zones de stockage de construction
+ConstructionStorages	List<Storage>	public	Stockages de construction
+isInfoWindowOpen	bool	private	Fenêtre d’info ouverte
+Méthodes
+Nom	Paramètres	Retour	Visibilité	Rôle
+Position	Unit unit	Vector3	public virtual	Position d’entrée
+Awake	—	void	public virtual	Initialisation Unity
+Start	—	void	public virtual	Démarrage Unity
+Work	—	void	public virtual	Boucle principale : construction, modules, UI
+InitializeModules	—	void	public	Installe les modules dans les slots
+InstallModule	BuildingSlot slot, GameObject modulePrefab	void	public	Installe un module
+MaterialsDefault	—	void	public	Remet les matériaux par défaut
+MaterialsColor	COLOR color	void	public	Applique une couleur
+MaterialsHeight	float n	void	public virtual	Gère la hauteur de construction
+Center	—	Vector3	public	Position centrale
+UnitEnter	Unit unit	void	public	Ajoute une unité
+UnitExit	—	void	private	Fait sortir l’unité en tête
+UnitExit	Unit unit	void	public	Ajoute une unité à la file de sortie
+UnitExitImemdiatly	Unit unit	void	public	Sortie immédiate
+UnitDie	Unit unit	void	public	Supprime une unité morte
+UpdateVisual	—	void	public	Active/désactive émissifs et lumières
+DailyUpdate	—	void	public virtual	Mise à jour quotidienne
+InitializePlacement	—	void	public virtual	Initialise le placement
+PlacementAuthorizedCircle	MyTerrain terrain	void	public	Affiche le cercle de placement
+PlacementAuthorized	MyTerrain terrain, ref GameObject target, ref bool rotate	bool	public virtual	Vérifie si le placement est autorisé
+PlacementAuthorizedCoast	MyTerrain terrain, MyRect rect	bool	public	Vérifie les contraintes de côte
+CancelPlacement	—	void	public virtual	Annule le placement
+InitializeContruction	—	void	public virtual	Initialise la construction
+OnConstructionComplete	—	void	public	Appelle ConstructionDone
+OnConstructionCanceled	—	void	public	Appelle CancelConstruction
+ConstructionDone	—	void	public virtual	Finalise la construction
+AdditionalsBuildings	GameObject root	void	private	Gère bâtiments additionnels
+UnreserveStorage	Storage storage	void	public	Libère un stockage
+UnreserveAllStorages	List<Storage> list	void	public	Libère tous les stockages
+DestroyStorage	Storage storage	void	public	Détruit un stockage
+DestroyAllStorages	List<Storage> list	void	public	Détruit tous les stockages
+FreeStoragesCount	—	int	public	Nombre de stockages libres
+GetStorage	RESOURCE resource	Storage	public	Réserve un stockage permanent
+GetConstructionStorage	—	Storage	public	Réserve un stockage de construction
+CancelConstruction	—	void	public virtual	Annule la construction
+Remove	—	void	public virtual	Supprime le bâtiment
+HideAndDeleteTerrainCircle	—	void	private	Cache et supprime le cercle
+ShowTerrainCircle	—	void	public	Affiche le cercle
+HideTerrainCircle	—	void	public	Cache le cercle
+SetPersistentCircle	bool persistent	void	public	Active/désactive le cercle persistant
+InArea	Vector3 position	bool	public	Vérifie si une position est dans la zone
+OnSecondaryBuildingDone	int n	void	public virtual	Callback bâtiment secondaire
+WorkersList	—	List<Unit>	public virtual	Liste des travailleurs
+ActiveTaches	—	int	public virtual	Nombre de tâches actives
+OnEscape	—	void	public virtual	Callback Escape
+OnYes	—	void	public virtual	Callback Yes
+EscapeCancelConstructionWindow	—	void	public	Ferme la fenêtre d’annulation
+OnMouseClick	—	void	public virtual	Gère le clic sur le bâtiment
+InfoWindowCallBack	UIWindowStackEvent evt	void	public	Callback de la fenêtre d’info
+DebugInitializeConstruction	—	void	public virtual	Initialise la construction en debug
+GetAllNavMeshObstacles	GameObject root	List<NavMeshObstacle>	private	Récupère tous les obstacles NavMesh
+SetProductionSpeed	float speed	void	public virtual	Vitesse de production
+Serialize	SerializableDatas sd	void	public	Sérialisation
+PreDeserialize	DeserializableDatas sd	void	public	Pré-désérialisation
+Deserialize	DeserializableDatas sd	void	public	Désérialisation
+Cycle de vie / Fonctionnement
+Awake : initialise LastExitTime, groundRotation, Status = NONE, Storages.
+
+Work : si en construction, appelle constructionModule.Work() et InfoWindow.Work(). Sinon, gère les sorties d’unités, appelle Work() de chaque module, puis InfoWindow.Work().
+
+InitializePlacement : passe en PLACEMENT, active seulement "Building", affiche les cercles.
+
+InitializeContruction : passe en CONSTRUCTION, crée les stockages de construction, active les objets de chantier, installe ConstructionModule.
+
+ConstructionDone : passe en COMPLETE, nettoie la hiérarchie, crée les stockages permanents, initialise les modules, ajoute le LOD, l’écouteur de clic.
+
+Remove : retire le bâtiment du manager, détruit les stockages, désinstalle les modules, détruit le GameObject.
+
+Interactions
+Utilise BuildingSlot et BuildingModule.
+
+Utilise Storage, ConstructionModule, BuildingUI, InfoWindowBuilding.
+
+Appelle Player.Managers, Terrain, TimeManager, Configuration*.
+
+2. BuildingModule.cs
+Rôle
+Classe de base pour tous les modules attachés à un bâtiment. Gère l’installation, la désinstallation, le travail, les stockages et l’UI détaillée.
+
+Enum MODULE_TYPE
+csharp
+public enum MODULE_TYPE
+{
+    OCCUPANCY,
+    STORAGE,
+    WORKSHOP,
+    DEFENSE,
+    EXTENSION
+}
+Classe BuildingSlot
+csharp
+[System.Serializable]
+public class BuildingSlot
+{
+    public List<GameObject> Modules;
+    public BuildingModule Module;
+}
+Classe BuildingModule : MonoBehaviour
+Variables
+Nom	Type	Visibilité	Rôle
+UI	UIBuildingModule	public	UI compacte du module
+UIWindow	GameObject	public	Prefab de la fenêtre détaillée
+Building	Building	public	Bâtiment parent
+Storages	List<Storage>	public	Stockages réservés par ce module
+Méthodes
+Nom	Paramètres	Retour	Visibilité	Rôle
+Install	Building building	void	public virtual	Installe le module, crée l’UI
+Uninstall	—	void	public virtual	Libère les stockages, retire l’UI
+Work	—	void	public virtual	Logique du module
+GetStorage	RESOURCE resource, STORAGE type, int priority, bool fixedPriority, int max = 0	Storage	public virtual	Réserve et configure un stockage
+UnreserveStorage	Storage storage, bool clearAmount = false	void	public virtual	Libère un stockage
+UnreserveAllStorages	—	void	public virtual	Libère tous les stockages
+DestroyAllStorages	—	void	public virtual	Détruit tous les stockages
+CreateDetailedUI	UIWindowBuildingModulesContainer container	void	public	Instancie et initialise l’UI détaillée
+Fonctionnement
+Install : stocke le bâtiment, crée la liste de stockages, instancie UI et l’ajoute à Building.UI.
+
+GetStorage : demande un stockage permanent à Building.GetStorage, le configure via SetResource et SetAttributes, puis l’ajoute à Storages.
+
+CreateDetailedUI : instancie UIWindow, le parente à container.ContainerModules, récupère UIWindowBuildingModule, l’initialise et l’ajoute au container.
+
+3. BuildingUI.cs
+Rôle
+UI monde attachée à un bâtiment. Elle suit la position 3D du bâtiment et contient les UI compactes des modules.
+
+Classe BuildingUI : GameObjectUI, UILanguage
+Variables
+Nom	Type	Visibilité	Rôle
+ModulesContainer	GameObject	public	Conteneur des UI de modules
+moduleUIs	List<UIBuildingModule>	private	Liste des UI de modules
+UIPivotPoint	GameObject	public	Point 3D au-dessus duquel l’UI s’affiche
+Méthodes
+Nom	Paramètres	Retour	Visibilité	Rôle
+Start	—	void	public override	Démarrage Unity
+Update	—	void	public virtual	Met à jour la position
+AddModule	UIBuildingModule module	void	public	Ajoute une UI de module
+RemoveModule	UIBuildingModule module	void	public	Retire une UI de module
+RearrangeModules	—	void	private	Réordonne et met à jour le layout
+UpdateUIPosition	—	void	private	Convertit la position 3D en position UI
+Language	—	void	public	Gestion des traductions
+4. UIWindowBuildingModulesContainer.cs
+Rôle
+Fenêtre d’information détaillée d’un bâtiment. Contient les UI détaillées des modules (UIWindowBuildingModule).
+
+Classe UIWindowBuildingModulesContainer : UIWindowStack
+Variables
+Nom	Type	Visibilité	Rôle
+Building	Building	public	Bâtiment associé
+BuildingText	Text	public	Texte du nom du bâtiment
+ContainerModules	GameObject	public	Conteneur des modules UI
+modules	List<UIWindowBuildingModule>	private	Liste des modules UI
+Méthodes
+Nom	Paramètres	Retour	Visibilité	Rôle
+InitializeContainer	Building building	void	public	Initialise le container, active boutons si validation nécessaire
+Open	IDictionary<string, object> p	int	public override	Recalcule les layouts puis ouvre
+CloseWindow	UIWINDOWSTACK_EVENT evt	void	protected override	Applique ou annule les modules
+AddModule	UIWindowBuildingModule module	void	public	Ajoute un module UI
+RemoveModule	UIWindowBuildingModule module	void	public	Retire un module UI
+ClearModules	—	void	public	Détruit tous les modules UI
+Language	—	void	public	Traduit le titre
+OnDestroy	—	void	public	Retire le handler de langue
+Fonctionnement
+Open force la reconstruction des layouts des enfants puis du container et du panel avant d’appeler base.Open(p).
+
+CloseWindow : si YES, appelle Apply() sur tous les modules ; si NO, appelle Cancel().
+
+5. InfoWindowBuilding.cs
+Rôle
+Ancienne fenêtre d’information d’un bâtiment. Gère l’activation/désactivation et le cercle persistant.
+
+Classe InfoWindowBuilding : UIWindowStack, UILanguage
+Variables
+Nom	Type	Visibilité	Rôle
+Title	TextMeshProUGUI	public	Titre de la fenêtre
+Building	Building	public	Bâtiment associé
+UseEnableButton	bool	public	Utiliser les boutons Enable/Disable
+Enable	GameObject	public	Bouton activer
+Disable	GameObject	public	Bouton désactiver
+BuildingEnable	bool	public	État d’activation
+TogglePersistentCircle	Toggle	public	Toggle du cercle persistant
+Méthodes
+Nom	Paramètres	Retour	Visibilité	Rôle
+InitializeEnable	—	void	public	Initialise les boutons et le toggle
+Initialize	Building building	void	public virtual	Initialise la fenêtre
+Work	—	void	public virtual	Mise à jour
+EnableBulding	—	void	public virtual	Active le bâtiment
+DisableBulding	—	void	public virtual	Désactive le bâtiment
+OnEnable	—	void	public virtual	Callback Unity
+OnDisable	—	void	public virtual	Callback Unity
+PersistentCircleToggleChange	—	void	public	Change le cercle persistant
+Language	—	void	public virtual	Traduit le titre
+OnDestroy	—	void	public	Retire le handler de langue
+6. UIBuildingModule.cs
+Rôle
+UI compacte d’un module de bâtiment.
+
+Classe UIBuildingModule : MonoBehaviour
+Variables
+Nom	Type	Visibilité	Rôle
+Module	BuildingModule	public	Module associé
+Méthodes
+Nom	Paramètres	Retour	Visibilité	Rôle
+Initialize	BuildingModule module	void	public virtual	Stocke le module
+7. UIWindowBuildingModule.cs
+Rôle
+UI détaillée d’un module dans la fenêtre d’information. Sert de base aux modules qui ont besoin de validation, Apply/Cancel, et traduction.
+
+Classe UIWindowBuildingModule : MonoBehaviour, UILanguage
+Variables
+Nom	Type	Visibilité	Rôle
+Title	string	public	Clé de traduction du titre
+TitleField	TextMeshProUGUI	public	Champ de texte du titre
+Méthodes
+Nom	Paramètres	Retour	Visibilité	Rôle
+Initialize	BuildingModule module	void	public virtual	Initialise, ajoute le handler de langue
+Language	—	void	public virtual	Traduit le titre
+NeedValidation	—	bool	public virtual	Indique si le module a besoin de OK/Cancel
+Apply	—	void	public virtual	Applique les changements
+Cancel	—	void	public virtual	Annule les changements
+OnDestroy	—	void	public	Retire le handler de langue
+8. Diagramme de dépendances
+text
+Building
+ ├── BuildingSlot
+ │    └── BuildingModule
+ │         ├── Storage
+ │         ├── UIBuildingModule
+ │         └── UIWindowBuildingModule
+ ├── BuildingUI
+ │    └── UIBuildingModule
+ ├── InfoWindowBuilding
+ └── UIWindowBuildingModulesContainer
+      └── UIWindowBuildingModule
+Building utilise BuildingSlot pour installer des BuildingModule.
+
+BuildingModule réserve des Storage via Building.GetStorage.
+
+BuildingUI contient les UIBuildingModule (UI compacte).
+
+UIWindowBuildingModulesContainer contient les UIWindowBuildingModule (UI détaillée).
+
+BuildingModule.CreateDetailedUI instancie UIWindow et l’ajoute au container.
+
+9. Notes et pièges
+Building.Work ne fait rien pour les modules si le bâtiment est en construction : c’est constructionModule.Work() qui est appelé.
+
+Building.ConstructionDone détruit tous les enfants sauf "Building", "Obstacles", "Persistent". Il recrée ensuite les stockages permanents et initialise les modules.
+
+BuildingModule.Install instancie UI et l’ajoute à Building.UI. Si UI est null, rien n’est fait.
+
+BuildingModule.GetStorage retourne null si aucun stockage libre n’est trouvé.
+
+UIWindowBuildingModulesContainer.Open force la reconstruction des layouts pour que la fenêtre s’adapte à la taille réelle des modules.
+
+UIWindowBuildingModule.NeedValidation retourne false par défaut. Surcharger pour activer les boutons OK/Cancel.
+
+InfoWindowBuilding semble être une ancienne fenêtre d’information, remplacée partiellement par UIWindowBuildingModulesContainer. Vérifier les usages avant modification.
